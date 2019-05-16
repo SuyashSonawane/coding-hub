@@ -35,6 +35,8 @@ export default {
               },
               map
             })
+            marker.addListener('mouseover', () => infoWindow.open(map, marker))
+            marker.addListener('mouseout', () => infoWindow.close())
             // add click event to marker
             marker.addListener('click', () => {
               this.$router.push({ name: 'ViewProfile', params: { id: doc.id }})

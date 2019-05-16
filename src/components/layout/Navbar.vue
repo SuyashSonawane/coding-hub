@@ -7,7 +7,7 @@
           <ul class="right">
             <li><router-link v-if="!user" :to="{name:'Signup'}">SignUp</router-link></li>
             <li><router-link v-if="!user" :to="{name:'Login'}">LogIn</router-link></li>
-            <li><a v-if="user" >{{user.email}}</a></li>
+            <li><router-link v-if="user" :to="{name:'ViewProfile',params:{id:currentUser.id}}">{{currentUser.username}}</router-link></li>
             <li><a @click="logout" v-if="user">Logout</a></li>
           </ul>
         </div>
@@ -18,12 +18,14 @@
 
 <script>
 import firebase, { firestore } from 'firebase'
+import db from '@/firebase/init'
 export default {
     name:'Navbar',
     data(){
       return{
         user:null,
-        username:null
+        username:null,
+        currentUser:null
       }
 
     },
@@ -41,7 +43,22 @@ export default {
         if(user)
         {
             this.user=user
-            console.log(user)
+            setTimeout(() => {
+              console.log(user.uid)
+              
+            }, 2000);
+            let ref = db.collection('users')
+         // current user
+        ref.where('user_id', '==', firebase.auth().currentUser.uid).get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            this.currentUser = doc.data()
+            this.currentUser.id = doc.id
+          })
+          console.log(this.currentUser)
+        })
+        
+            
         }
         else
           this.user=null
